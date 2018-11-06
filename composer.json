@@ -1,0 +1,16 @@
+{
+    "autoload": {
+        "psr-4": {
+            "Pho\\GraphJS\\": "src/"
+        }
+    },
+    "config": {
+        "platform": {
+            "php": "7.0"
+        }
+    },
+    "require": {
+        "guzzlehttp/guzzle": "^6.3",
+        "php-di/php-di": "^6.0"
+    }
+}
