@@ -7,39 +7,19 @@ use Pho\GraphJS\Lib\LoginCall;
 
 class GraphJS
 {
-    protected $publicId;
+    private $graphJSConfig;
 
-    protected $host = 'https://build.phonetworks.com';
+    private $container;
 
-    protected $sessionId;
-
-    protected $container;
-
-    public function __construct($publicId, $options = [])
+    public function __construct(GraphJSConfig $graphJSConfig)
     {
-        $this->publicId = $publicId;
-        $this->host = $options['host'] ?? $this->host;
+        $this->graphJSConfig = $graphJSConfig;
 
         $builder = new ContainerBuilder();
         $builder->addDefinitions([
-            GraphJS::class => $this,
+            GraphJSConfig::class => $this->graphJSConfig,
         ]);
         $this->container = $builder->build();
-    }
-
-    public function getHost()
-    {
-        return $this->host;
-    }
-
-    public function getPublicId()
-    {
-        return $this->publicId;
-    }
-
-    public function setSession($sessionId)
-    {
-        $this->sessionId = $sessionId;
     }
 
     public function login($username, $password)

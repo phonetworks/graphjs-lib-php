@@ -2,17 +2,17 @@
 
 namespace Pho\GraphJS\Lib;
 
-use Pho\GraphJS\GraphJS;
+use Pho\GraphJS\GraphJSConfig;
 
 class LoginCall
 {
-    private $graphJS;
+    private $graphJSConfig;
 
     private $apiCall;
 
-    public function __construct(GraphJS $graphJS, ApiCall $apiCall)
+    public function __construct(GraphJSConfig $graphJSConfig, ApiCall $apiCall)
     {
-        $this->graphJS = $graphJS;
+        $this->graphJSConfig = $graphJSConfig;
         $this->apiCall = $apiCall;
     }
 
@@ -27,7 +27,7 @@ class LoginCall
         $data = json_decode($contents, true);
 
         if ($data['success']) {
-            $this->graphJS->setSession($data['id']);
+            $this->graphJSConfig->setSessionId($data['id']);
         }
 
         return $data;
