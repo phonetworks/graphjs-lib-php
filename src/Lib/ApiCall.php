@@ -3,6 +3,8 @@
 namespace Pho\GraphJS\Lib;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use Pho\GraphJS\Exception\GraphJSException;
 use Pho\GraphJS\GraphJSConfig;
 use Psr\Http\Message\ResponseInterface;
 
@@ -23,8 +25,19 @@ class ApiCall
             'public_id' => $this->graphJSConfig->getPublicId(),
         ] + $args;
         $uri = $this->graphJSConfig->getHost() . '/' . $path . '?' . http_build_query($args);
-        $response = $this->client->request('GET', $uri);
+        $headers = [
+            'Content-Type' => 'application/json',
+        ];
 
-        return $response;
+        try {
+            $response = $this->client->request('GET', $uri, [
+                'headers' => $headers,
+            ]);
+
+            return $response;
+        }
+        catch (GuzzleException $ex) {
+            throw new GraphJSException('GuzzleException occurred', 0, $ex);
+        }
     }
 }
