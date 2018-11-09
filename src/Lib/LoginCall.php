@@ -2,20 +2,8 @@
 
 namespace Pho\GraphJS\Lib;
 
-use Pho\GraphJS\GraphJSConfig;
-
-class LoginCall
+class LoginCall extends BaseCall
 {
-    private $graphJSConfig;
-
-    private $apiCall;
-
-    public function __construct(GraphJSConfig $graphJSConfig, ApiCall $apiCall)
-    {
-        $this->graphJSConfig = $graphJSConfig;
-        $this->apiCall = $apiCall;
-    }
-
     public function call($username, $password)
     {
         $response = $this->apiCall->call('login', [
@@ -27,7 +15,17 @@ class LoginCall
         $data = json_decode($contents, true);
 
         if ($data['success']) {
-            $this->graphJSConfig->setSessionId($data['id']);
+            $cookies = $response->getHeader('Set-Cookie');
+            $cookies = array_reduce($cookies, function ($acc, $cookie) {
+                $keyValue = explode('=', $cookie);
+                return [
+                    $keyValue[0] => $keyValue[1],
+                ] + $acc;
+            }, []);
+            if (isset($cookies['id'])) {
+                $this->graphJSConfig->setSessionId($cookies['id']);
+            }
+            $this->graphJSConfig->setResponseId($data['id']);
         }
 
         return $data;

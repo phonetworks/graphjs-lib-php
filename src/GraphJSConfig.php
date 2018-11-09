@@ -12,6 +12,8 @@ class GraphJSConfig
 
     private $sessionId;
 
+    private $responseId;
+
     public function __construct($options = [])
     {
         if (isset($options['public_id'])) {
@@ -57,6 +59,18 @@ class GraphJSConfig
     public function setSessionId($sessionId)
     {
         $this->sessionId = $sessionId;
+
+        return $this;
+    }
+
+    public function getResponseId()
+    {
+        return $this->responseId;
+    }
+
+    public function setResponseId($responseId)
+    {
+        $this->responseId = $responseId;
 
         return $this;
     }

@@ -19,7 +19,7 @@ class ApiCall
         $this->client = $client;
     }
 
-    public function call($path, array $args = []): ResponseInterface
+    public function call($path, array $args = [], $withSession = false): ResponseInterface
     {
         $args = [
             'public_id' => $this->graphJSConfig->getPublicId(),
@@ -28,6 +28,14 @@ class ApiCall
         $headers = [
             'Content-Type' => 'application/json',
         ];
+
+        if ($withSession) {
+            $cookieName = 'id';
+            $cookieValue = $this->graphJSConfig->getSessionId();
+            $headers = [
+                'Cookie' => "$cookieName=$cookieValue",
+            ];
+        }
 
         try {
             $response = $this->client->request('GET', $uri, [
