@@ -23,7 +23,7 @@ class GraphJSConfig
             $this->host = $options['host'];
         }
         if (isset($options['session_id'])) {
-            $this->host = $options['session_id'];
+            $this->sessionId = $options['session_id'];
         }
     }
 
