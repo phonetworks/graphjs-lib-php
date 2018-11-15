@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
-class LoginCallTest extends TestCase
+class GetUserCallTest extends TestCase
 {
     private $graphjsConfig;
     private $apiCall;
@@ -29,42 +29,33 @@ class LoginCallTest extends TestCase
             ->will($this->returnValue($this->stream));
     }
 
-    public function test_call_returns_response_data_for_failed_login()
+    public function test_call_returns_response_data_when_failed_to_get_user()
     {
-        $responseContent = [ 'success' => false, 'reason' => 'some message' ];
+        $responseContent = [ 'success' => false, 'reason' => 'Some message' ];
         $this->stream->expects($this->any())
             ->method('getContents')
             ->will($this->returnValue(json_encode($responseContent)));
         $this->apiCall->expects($this->once())
             ->method('call')
             ->will($this->returnValue($this->response));
-        $loginCall = new LoginCall($this->graphjsConfig, $this->apiCall);
+        $getUserCall = new GetUserCall($this->graphjsConfig, $this->apiCall);
 
-        $this->assertEquals($responseContent, $loginCall->call('username', 'password'));
+        $this->assertEquals($responseContent, $getUserCall->call());
     }
 
-    public function test_call_returns_response_data_and_sets_session_for_successful_login()
+    public function test_call_returns_response_data_and_sets_session_when_success_to_get_user()
     {
-        $responseId = '1234abcd';
-        $responseContent = [ 'success' => true, 'id' => $responseId ];
-        $sessionId = '123';
-        $setCookieHeaderValues = [ 'id=' . $sessionId ];
+        $responseContent = [ 'success' => true, 'user' => [] ];
         $this->stream->expects($this->any())
             ->method('getContents')
             ->will($this->returnValue(json_encode($responseContent)));
-        $this->response->expects($this->any())
-            ->method('getHeader')
-            ->with('Set-Cookie')
-            ->will($this->returnValue($setCookieHeaderValues));
         $this->apiCall->expects($this->once())
             ->method('call')
             ->will($this->returnValue($this->response));
         $this->graphjsConfig->expects($this->once())
             ->method('setSessionId');
-        $this->graphjsConfig->expects($this->once())
-            ->method('setResponseId');
-        $loginCall = new LoginCall($this->graphjsConfig, $this->apiCall);
+        $getUserCall = new GetUserCall($this->graphjsConfig, $this->apiCall);
 
-        $this->assertEquals($responseContent, $loginCall->call('username', 'password'));
+        $this->assertEquals($responseContent, $getUserCall->call());
     }
 }

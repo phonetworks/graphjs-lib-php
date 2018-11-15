@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
-class LoginCallTest extends TestCase
+class LogoutCallTest extends TestCase
 {
     private $graphjsConfig;
     private $apiCall;
@@ -29,24 +29,23 @@ class LoginCallTest extends TestCase
             ->will($this->returnValue($this->stream));
     }
 
-    public function test_call_returns_response_data_for_failed_login()
+    public function test_call_returns_response_data_for_failed_logout()
     {
-        $responseContent = [ 'success' => false, 'reason' => 'some message' ];
+        $responseContent = [ 'success' => false, 'reason' => 'Some message' ];
         $this->stream->expects($this->any())
             ->method('getContents')
             ->will($this->returnValue(json_encode($responseContent)));
         $this->apiCall->expects($this->once())
             ->method('call')
             ->will($this->returnValue($this->response));
-        $loginCall = new LoginCall($this->graphjsConfig, $this->apiCall);
+        $logoutCall = new LogoutCall($this->graphjsConfig, $this->apiCall);
 
-        $this->assertEquals($responseContent, $loginCall->call('username', 'password'));
+        $this->assertEquals($responseContent, $logoutCall->call());
     }
 
-    public function test_call_returns_response_data_and_sets_session_for_successful_login()
+    public function test_call_returns_response_data_and_removes_session_for_successful_logout()
     {
-        $responseId = '1234abcd';
-        $responseContent = [ 'success' => true, 'id' => $responseId ];
+        $responseContent = [ 'success' => true ];
         $sessionId = '123';
         $setCookieHeaderValues = [ 'id=' . $sessionId ];
         $this->stream->expects($this->any())
@@ -63,8 +62,8 @@ class LoginCallTest extends TestCase
             ->method('setSessionId');
         $this->graphjsConfig->expects($this->once())
             ->method('setResponseId');
-        $loginCall = new LoginCall($this->graphjsConfig, $this->apiCall);
+        $logoutCall = new LogoutCall($this->graphjsConfig, $this->apiCall);
 
-        $this->assertEquals($responseContent, $loginCall->call('username', 'password'));
+        $this->assertEquals($responseContent, $logoutCall->call());
     }
 }

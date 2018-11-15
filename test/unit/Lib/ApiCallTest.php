@@ -43,7 +43,9 @@ class ApiCallTest extends TestCase
             ->method('request')
             ->will($this->returnValue($this->response));
         $apiCall = new ApiCall($this->graphjsConfig, $this->client);
-        $apiCall->call('/path', [ 'param' => 'value' ], true);
+        $response = $apiCall->call('/path', [ 'param' => 'value' ], true);
+
+        $this->assertEquals($this->response, $response);
     }
 
     public function test_call_throws_GraphJSException_when_GuzzleException_occurs()
